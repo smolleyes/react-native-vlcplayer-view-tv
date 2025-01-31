@@ -1,4 +1,4 @@
-package ch.ifocusit.andoid.player
+package ch.ifocusit.android.player
 
 import android.app.Activity
 import android.content.Context

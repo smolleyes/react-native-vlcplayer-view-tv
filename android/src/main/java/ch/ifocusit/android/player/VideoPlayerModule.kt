@@ -1,4 +1,4 @@
-package ch.ifocusit.andoid.player
+package ch.ifocusit.android.player
 
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
