@@ -1,64 +1,67 @@
 package ch.ifocusit.andoid.player
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
-import android.net.Uri
-import android.view.View
-import ch.ifocusit.andoid.player.VideoPlayerModule.VideoSource
-import org.videolan.libvlc.LibVLC
-import org.videolan.libvlc.Media
-import org.videolan.libvlc.MediaPlayer
-import org.videolan.libvlc.util.VLCVideoLayout
+import android.view.ViewGroup
+import com.facebook.react.uimanager.ThemedReactContext
 
-@SuppressLint("ViewConstructor")
-class PlayerView(context: Context) : View(context) {
-
-    private val libVLC: LibVLC = LibVLC(context)
-
-    private val videoLayout = VLCVideoLayout(context).also {
-        it.setBackgroundColor(Color.BLACK)
-    }
-
-    internal val player: MediaPlayer = MediaPlayer(libVLC).also {
-        it.attachViews(videoLayout, null, true, true)
-        it.videoScale = MediaPlayer.ScaleType.SURFACE_FIT_SCREEN
-    }
+class PlayerView(context: Context) : ViewGroup(context) {
+    private var player: VlcPlayer? = null
+    private var videoManager: VideoManager? = null
+    private var paused = false
 
     init {
-        addView(videoLayout)
+        layoutParams = LayoutParams(
+            LayoutParams.MATCH_PARENT,
+            LayoutParams.MATCH_PARENT
+        )
+        videoManager = VideoManager(context)
     }
 
-    var source: VideoSource? = null
-        set(value) {
-            if (field == value) {
-                return
-            }
-            if (field != null) {
-                player.stop()
-            }
-            field = value
-            if (field != null) {
-                val media = media(field!!.uri)
-                player.media = media
-                media.release()
-            }
-            player.play()
-            if (value?.time != null) {
-                player.time = value.time
-            }
-        }
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        val width = r - l
+        val height = b - t
 
-    private fun media(uri: String): Media {
-        if (uri.startsWith("http")) {
-            return Media(libVLC, Uri.parse(uri))
+        val childCount = childCount
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            child.layout(0, 0, width, height)
         }
-        return Media(libVLC, uri)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val width = MeasureSpec.getSize(widthMeasureSpec)
+        val height = MeasureSpec.getSize(heightMeasureSpec)
+        setMeasuredDimension(width, height)
+
+        val childCount = childCount
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            child.measure(
+                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+            )
+        }
+    }
+
+    fun setSource(source: VideoSource) {
+        player?.release()
+        player = videoManager?.createPlayer(source)
+        player?.let { addView(it) }
+    }
+
+    fun setPaused(paused: Boolean) {
+        this.paused = paused
+        if (paused) {
+            player?.pause()
+        } else {
+            player?.play()
+        }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        player.release()
-        libVLC.release()
+        player?.release()
+        player = null
+        videoManager = null
     }
 }

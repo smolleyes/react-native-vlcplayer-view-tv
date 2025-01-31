@@ -1,160 +1,152 @@
 package ch.ifocusit.andoid.player
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
-import ch.ifocusit.andoid.player.VideoPlayerModule.Dimensions
-import ch.ifocusit.andoid.player.VideoPlayerModule.PlayerConfiguration
-import ch.ifocusit.andoid.player.VideoPlayerModule.ProgressInfo
-import ch.ifocusit.andoid.player.VideoPlayerModule.Track
-import ch.ifocusit.andoid.player.VideoPlayerModule.VideoInfo
-import ch.ifocusit.andoid.player.VideoPlayerModule.VideoSource
-import android.os.Handler
-import android.os.Looper
+import android.view.SurfaceView
 import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
 import org.videolan.libvlc.interfaces.IMedia
-import org.videolan.libvlc.interfaces.IMedia.VideoTrack
-import org.videolan.libvlc.util.VLCVideoLayout
+import org.videolan.libvlc.interfaces.IVLCVout
 
-@SuppressLint("ViewConstructor")
-class VlcPlayer(context: Context, config: PlayerConfiguration?) {
+class VlcPlayer(context: Context, private val source: VideoSource) : SurfaceView(context), IVLCVout.Callback {
+    private val libVlc: LibVLC
+    private val mediaPlayer: MediaPlayer
+    private var time: Long = source.time
+    private var paused = false
+    private var volume = 100
+    private var audioDelay: Long = 0
 
-    private val mainHandler = Handler(Looper.getMainLooper())
-    var view: VideoView? = null
-    internal var videoInfo: VideoInfo? = null
+    init {
+        val options = arrayOf(
+            "--no-drop-late-frames",
+            "--no-skip-frames",
+            "--rtsp-tcp",
+            "-vvv"
+        )
 
-    val staysActiveInBackground = false
+        libVlc = LibVLC(context, ArrayList<String>().apply { addAll(options) })
+        mediaPlayer = MediaPlayer(libVlc)
 
-    private val libVLC: LibVLC =
-        if (config?.initOptions != null) LibVLC(context, config.initOptions)
-        else LibVLC(context)
+        holder.setKeepScreenOn(true)
+        mediaPlayer.vlcVout.setVideoView(this)
+        mediaPlayer.vlcVout.addCallback(this)
+        mediaPlayer.vlcVout.attachViews()
 
-    internal val videoLayout = VLCVideoLayout(context)
+        val media = Media(libVlc, source.uri)
+        media.setHWDecoderEnabled(true, false)
+        media.addOption(":network-caching=1000")
 
-    internal val player: MediaPlayer = MediaPlayer(libVLC).also {
-        it.attachViews(videoLayout, null, true, true)
-        it.videoScale = MediaPlayer.ScaleType.SURFACE_FIT_SCREEN
-        it.setAudioOutput("audiotrack")
-    }
+        mediaPlayer.media = media
+        media.release()
 
-    var source: VideoSource? = null
-        set(value) {
-            if (player.isReleased) return
-            if (field == value) return
-            if (field != null) player.stop()
-            field = value
-            videoInfo = null
-            if (value != null) {
-                val media = media(value.uri, value.options)
-                player.media = media
-                media.release()
-                if (value.time != null) {
-                    player.time = value.time
-                }
+        mediaPlayer.setEventListener { event ->
+            when (event.type) {
+                MediaPlayer.Event.Playing -> notifyPlaying()
+                MediaPlayer.Event.Paused -> notifyPaused()
+                MediaPlayer.Event.EndReached -> notifyEnded()
+                MediaPlayer.Event.EncounteredError -> notifyError()
+                MediaPlayer.Event.TimeChanged -> notifyProgress()
+                MediaPlayer.Event.MediaChanged -> notifyLoaded()
             }
         }
 
-    fun sourceChanged() = videoInfo == null && player.hasMedia()
-
-    fun loadVideoInfo(): VideoInfo? {
-        if (videoInfo != null) {
-            return videoInfo
+        if (time > 0) {
+            mediaPlayer.time = time
         }
-        val videoTrack = player.getSelectedTrack(IMedia.Track.Type.Video) as VideoTrack?
-        if (videoTrack != null) {
-            this.videoInfo = VideoInfo(videoTrack.let { Track(it.id, it.name) },
-                Dimensions(videoTrack.width, videoTrack.height),
-                player.isSeekable,
-                player.length,
-                player.getTracks(IMedia.Track.Type.Audio).orEmpty().map { Track(it.id, it.name) },
-                player.getTracks(IMedia.Track.Type.Text).orEmpty().map { Track(it.id, it.name) })
-        }
-        return videoInfo
     }
 
-    private fun media(uri: String, options: List<String>?): Media {
-        val media = if (uri.startsWith("http")) Media(libVLC, Uri.parse(uri.trim()))
-        else Media(libVLC, uri.trim())
-        if (options != null) {
-            for (option in options) {
-                media.addOption(option)
+    private fun notifyPlaying() {
+        paused = false
+        (parent as? VideoView)?.emitEvent("playing")
+    }
+
+    private fun notifyPaused() {
+        paused = true
+        (parent as? VideoView)?.emitEvent("paused")
+    }
+
+    private fun notifyEnded() {
+        (parent as? VideoView)?.emitEvent("ended")
+    }
+
+    private fun notifyError() {
+        (parent as? VideoView)?.emitEvent("error")
+    }
+
+    private fun notifyProgress() {
+        time = mediaPlayer.time
+        (parent as? VideoView)?.emitEvent("progress", mapOf(
+            "time" to time,
+            "position" to mediaPlayer.position
+        ))
+    }
+
+    private fun notifyLoaded() {
+        (parent as? VideoView)?.emitEvent("loaded", mapOf(
+            "duration" to mediaPlayer.length,
+            "audioTracks" to mediaPlayer.audioTracks?.map { track ->
+                mapOf(
+                    "id" to track.id,
+                    "name" to track.name
+                )
+            },
+            "textTracks" to mediaPlayer.spuTracks?.map { track ->
+                mapOf(
+                    "id" to track.id,
+                    "name" to track.name
+                )
             }
-        }
-        return media
+        ))
     }
 
-    fun release() {
-        if (player.isReleased) return
-        player.release()
-        player.vlcVout.detachViews()
-        libVLC.release()
-        videoInfo = null
-    }
-
-    fun play(source: VideoSource? = null) {
-        if (player.isReleased) return
-        if (source != null) {
-            videoInfo = null
-            this.source = source
-        }
-        if (player.length == player.time) {
-            player.time = 0
-        }
-        player.play()
-        if (source?.time != null) {
-            mainHandler.post {
-                setTime(source.time)
-            }
-        }
-    }
-
-    fun progressInfo(): ProgressInfo {
-        return ProgressInfo(player.time, player.position)
-    }
-
-    fun setTime(timeInMillis: Long) {
-        val newValue = timeInMillis.coerceAtMost(player.length).coerceAtLeast(0)
-        player.time = newValue
-        if (!player.isPlaying) {
-            view?.emitEvent("onProgress", ProgressInfo(newValue, player.position))
-        }
-    }
-
-    fun setTimeDelta(delta: Long) {
-        setTime(player.time + delta)
-    }
-
-    fun setPosition(position: Float, fastSeeking: Boolean) {
-        val newValue = (position.coerceAtMost(1f).coerceAtLeast(0f))
-        player.setPosition(newValue, fastSeeking)
-        if (!player.isPlaying) {
-            view?.emitEvent("onProgress", ProgressInfo(player.time, newValue))
-        }
-    }
-
-    fun setPositionDelta(position: Float, fastSeeking: Boolean) {
-        setPosition(player.position + position, fastSeeking)
+    fun play() {
+        mediaPlayer.play()
     }
 
     fun pause() {
-        if (player.isReleased) return
-        player.pause()
+        mediaPlayer.pause()
+    }
+
+    fun togglePlay() {
+        if (mediaPlayer.isPlaying) {
+            pause()
+        } else {
+            play()
+        }
     }
 
     fun stop() {
-        if (player.isReleased) return
-        player.stop()
+        mediaPlayer.stop()
     }
 
-    fun setAudioDelay(delayInMillis: Long) {
-        player.audioDelay = delayInMillis * 1000
-        view?.emitEvent("onAudioDelayChanged", delayInMillis)
+    fun release() {
+        mediaPlayer.vlcVout.detachViews()
+        mediaPlayer.vlcVout.removeCallback(this)
+        mediaPlayer.release()
+        libVlc.release()
     }
 
-    fun setTextDelay(delayInMillis: Long) {
-        player.spuDelay = (delayInMillis * 1000)
-        view?.emitEvent("onTextDelayChanged", delayInMillis)
+    override fun onSurfacesCreated(vlcVout: IVLCVout) {}
+
+    override fun onSurfacesDestroyed(vlcVout: IVLCVout) {}
+
+    var selectedAudioTrackId: String = ""
+        set(value) {
+            field = value
+            mediaPlayer.audioTracks?.find { it.id.toString() == value }?.let {
+                mediaPlayer.audioTrack = it.id
+            }
+        }
+
+    var selectedTextTrackId: String = ""
+        set(value) {
+            field = value
+            mediaPlayer.spuTracks?.find { it.id.toString() == value }?.let {
+                mediaPlayer.spuTrack = it.id
+            }
+        }
+
+    fun unselectTextTrack() {
+        mediaPlayer.spuTrack = -1
     }
 }

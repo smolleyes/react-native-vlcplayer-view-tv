@@ -1,49 +1,40 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-
-group = 'ch.ifocusit.android.player'
-version = '0.1.0'
-
 buildscript {
-    ext.safeExtGet = { prop, fallback ->
-        rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-    }
-
+    ext.kotlin_version = "1.8.0"
     repositories {
         google()
         mavenCentral()
     }
-
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
     }
 }
 
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
 android {
     namespace "ch.ifocusit.android.player"
-    compileSdkVersion safeExtGet('compileSdkVersion', 34)
+    compileSdk 33
 
     defaultConfig {
-        minSdkVersion safeExtGet('minSdkVersion', 21)
-        targetSdkVersion safeExtGet('targetSdkVersion', 34)
-        versionCode 1
-        versionName "0.1.0"
+        minSdk 21
+        targetSdk 33
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-    }
-
-    lintOptions {
-        abortOnError false
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
@@ -53,9 +44,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
-    implementation 'org.videolan.android:libvlc-all:4.0.0-eap15'
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'com.facebook.react:react-native:+'
+    implementation 'org.videolan.android:libvlc-all:3.5.1'
 }
