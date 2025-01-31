@@ -24,6 +24,6 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@react-native-tvos/config-tv": "^0.1.1",
-    "metro-react-native-babel-preset": "^0.77.0"
+    "@react-native/babel-preset": "^7.20.0"
   }
 }
