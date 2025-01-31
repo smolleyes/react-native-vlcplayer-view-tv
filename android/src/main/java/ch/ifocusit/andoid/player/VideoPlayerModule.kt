@@ -3,7 +3,7 @@ package ch.ifocusit.andoid.player
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
-class VideoPlayerModule(reactContext: ReactContext) : ReactContextBaseJavaModule(reactContext) {
+class VideoPlayerModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     private val players = mutableMapOf<Int, VlcPlayer>()
     private var nextPlayerId = 1
 
@@ -35,7 +35,7 @@ class VideoPlayerModule(reactContext: ReactContext) : ReactContextBaseJavaModule
 
     @ReactMethod
     fun setTime(playerId: Int, time: Double) {
-        players[playerId]?.time = time.toLong()
+        players[playerId]?.setTime(time.toLong())
     }
 
     @ReactMethod
@@ -60,12 +60,12 @@ class VideoPlayerModule(reactContext: ReactContext) : ReactContextBaseJavaModule
 
     @ReactMethod
     fun setVolume(playerId: Int, volume: Double) {
-        players[playerId]?.volume = volume.toInt()
+        players[playerId]?.setVolume(volume.toInt())
     }
 
     @ReactMethod
     fun setAudioDelay(playerId: Int, delay: Double) {
-        players[playerId]?.audioDelay = delay.toLong()
+        players[playerId]?.setAudioDelay(delay.toLong())
     }
 
     @ReactMethod

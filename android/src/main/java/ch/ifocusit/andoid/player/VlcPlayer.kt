@@ -11,10 +11,9 @@ import org.videolan.libvlc.interfaces.IVLCVout
 class VlcPlayer(context: Context, private val source: VideoSource) : SurfaceView(context), IVLCVout.Callback {
     private val libVlc: LibVLC
     private val mediaPlayer: MediaPlayer
-    private var time: Long = source.time
-    private var paused = false
-    private var volume = 100
-    private var audioDelay: Long = 0
+    private var currentTime: Long = source.time
+    private var currentVolume = 100
+    private var currentAudioDelay: Long = 0
 
     init {
         val options = arrayOf(
@@ -50,18 +49,16 @@ class VlcPlayer(context: Context, private val source: VideoSource) : SurfaceView
             }
         }
 
-        if (time > 0) {
-            mediaPlayer.time = time
+        if (currentTime > 0) {
+            mediaPlayer.time = currentTime
         }
     }
 
     private fun notifyPlaying() {
-        paused = false
         (parent as? VideoView)?.emitEvent("playing")
     }
 
     private fun notifyPaused() {
-        paused = true
         (parent as? VideoView)?.emitEvent("paused")
     }
 
@@ -74,9 +71,9 @@ class VlcPlayer(context: Context, private val source: VideoSource) : SurfaceView
     }
 
     private fun notifyProgress() {
-        time = mediaPlayer.time
+        currentTime = mediaPlayer.time
         (parent as? VideoView)?.emitEvent("progress", mapOf(
-            "time" to time,
+            "time" to currentTime,
             "position" to mediaPlayer.position
         ))
     }
@@ -117,6 +114,21 @@ class VlcPlayer(context: Context, private val source: VideoSource) : SurfaceView
 
     fun stop() {
         mediaPlayer.stop()
+    }
+
+    fun setTime(time: Long) {
+        currentTime = time
+        mediaPlayer.time = time
+    }
+
+    fun setVolume(volume: Int) {
+        currentVolume = volume
+        mediaPlayer.volume = volume
+    }
+
+    fun setAudioDelay(delay: Long) {
+        currentAudioDelay = delay
+        mediaPlayer.audioDelay = delay * 1000 // Convert to microseconds
     }
 
     fun release() {
