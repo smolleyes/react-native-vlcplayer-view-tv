@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@react-native-tvos/config-tv": "^0.1.1",
-    "@react-native/babel-preset": "^7.20.0"
+    "@react-native/babel-preset": "^0.73.18",
+    "@react-native-tvos/config-tv": "^0.1.1"
   }
 }

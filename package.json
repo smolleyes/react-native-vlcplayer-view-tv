@@ -2,7 +2,14 @@
   "name": "react-native-vlcplayer-view-tv",
   "version": "1.0.0",
   "description": "React Native VLC media player view with full controls for TV",
-  "main": "src/index.js",
+  "main": "build/index.js",
+  "files": [
+    "build",
+    "android",
+    "ios",
+    "src",
+    "*.podspec"
+  ],
   "scripts": {
     "build": "babel src -d build",
     "clean": "rm -rf build",
@@ -30,7 +37,9 @@
   "devDependencies": {
     "@babel/cli": "^7.23.0",
     "@babel/core": "^7.23.0",
-    "metro-react-native-babel-preset": "^0.77.0"
+    "@react-native/babel-preset": "^0.73.18",
+    "react": "^18.2.0",
+    "react-native": "^0.72.0"
   },
   "peerDependencies": {
     "@react-native-community/slider": "^4.5.3",
