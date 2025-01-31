@@ -5,8 +5,9 @@ import android.view.ViewGroup
 import com.facebook.react.uimanager.ThemedReactContext
 
 class PlayerView(context: Context) : ViewGroup(context) {
+    private var videoManager: VideoManager? = null
     private var player: VlcPlayer? = null
-        private var paused = false
+    private var paused = false
 
     init {
         layoutParams = LayoutParams(
@@ -56,7 +57,25 @@ class PlayerView(context: Context) : ViewGroup(context) {
         }
     }
 
-    override fun onDetachedFromWindow() {
+    fun emitEvent(eventName: String, params: Any? = null) {
+  val event = com.facebook.react.bridge.Arguments.createMap().apply {
+    if (params != null) {
+      when (params) {
+        is Boolean -> putBoolean("value", params)
+        is Int -> putInt("value", params)
+        is Double -> putDouble("value", params)
+        is String -> putString("value", params)
+        else -> putString("value", params.toString())
+      }
+    }
+  }
+  val reactContext = context as? ThemedReactContext ?: return
+  reactContext
+    .getJSModule(com.facebook.react.uimanager.events.RCTEventEmitter::class.java)
+    .receiveEvent(id, eventName, event)
+}
+
+override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         player?.release()
         player = null
