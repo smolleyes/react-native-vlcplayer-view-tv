@@ -9,17 +9,17 @@ import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
 
-class VideoManager : SimpleViewManager<VideoView>() {
+class VideoManager : SimpleViewManager<VideoLayout>() {
   override fun getName(): String = "VideoView"
 
-  override fun createViewInstance(reactContext: ThemedReactContext): VideoView {
-    return VideoView(reactContext)
-  }
+override fun createViewInstance(reactContext: ThemedReactContext): VideoLayout {
+    return VideoLayout(reactContext)
+}
 
   @ReactProp(name = "fullscreen", defaultBoolean = false)
-  fun setFullscreen(videoView: VideoView, fullscreen: Boolean) {
-    videoView.post {
-      videoView.toggleFullscreen(fullscreen)
+  fun setFullscreen(videoLayout: VideoLayout, fullscreen: Boolean) {
+    videoLayout.post {
+      videoLayout.toggleFullscreen(fullscreen)
     }
   }
 }
@@ -27,7 +27,7 @@ class VideoManager : SimpleViewManager<VideoView>() {
 /**
  * A custom VideoView that integrates with VlcPlayer.
  */
-class VideoView constructor(private val reactContext: ReactContext) : FrameLayout(reactContext) {
+class VideoLayout constructor(private val reactContext: ReactContext) : FrameLayout(reactContext) {
   private var player: VlcPlayer? = null
   private var isFullscreen = false
 
