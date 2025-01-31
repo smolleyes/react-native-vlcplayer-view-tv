@@ -9,9 +9,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
 
 class VideoView(context: Context) : ViewGroup(context) {
     private var player: VlcPlayer? = null
-    private var videoManager: VideoManager? = null
-
-    init {
+        init {
         layoutParams = LayoutParams(
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT
@@ -49,10 +47,6 @@ class VideoView(context: Context) : ViewGroup(context) {
         addView(player)
     }
 
-    fun setVideoManager(manager: VideoManager) {
-        videoManager = manager
-        videoManager?.setView(this)
-    }
 
     fun emitEvent(eventName: String, params: Any? = null) {
         val event = Arguments.createMap().apply {

@@ -55,31 +55,31 @@ class VlcPlayer(context: Context, private val source: VideoSource) : SurfaceView
     }
 
     private fun notifyPlaying() {
-        (parent as? VideoView)?.emitEvent("playing")
+        (parent as? BaseVideoView)?.emitEvent("playing")
     }
 
     private fun notifyPaused() {
-        (parent as? VideoView)?.emitEvent("paused")
+        (parent as? BaseVideoView)?.emitEvent("paused")
     }
 
     private fun notifyEnded() {
-        (parent as? VideoView)?.emitEvent("ended")
+        (parent as? BaseVideoView)?.emitEvent("ended")
     }
 
     private fun notifyError() {
-        (parent as? VideoView)?.emitEvent("error")
+        (parent as? BaseVideoView)?.emitEvent("error")
     }
 
     private fun notifyProgress() {
         currentTime = mediaPlayer.time
-        (parent as? VideoView)?.emitEvent("progress", mapOf(
+        (parent as? BaseVideoView)?.emitEvent("progress", mapOf(
             "time" to currentTime,
             "position" to mediaPlayer.position
         ))
     }
 
     private fun notifyLoaded() {
-        (parent as? VideoView)?.emitEvent("loaded", mapOf(
+        (parent as? BaseVideoView)?.emitEvent("loaded", mapOf(
             "duration" to mediaPlayer.length,
             "audioTracks" to mediaPlayer.audioTracks?.map { track ->
                 mapOf(
