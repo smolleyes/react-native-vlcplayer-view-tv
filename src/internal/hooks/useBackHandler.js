@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
 
-export default function useBackHandler(handler) {
+export default function useBackHandler(handler: () => boolean | null | undefined) {
   useEffect(() => {
-    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      const result = handler();
-      return result;
-    });
+    const subscription = BackHandler.addEventListener('hardwareBackPress', handler);
 
-    return () => subscription.remove();
-  }, [handler]);
+    return () => {
+      subscription.remove();
+    };
+  });
 }

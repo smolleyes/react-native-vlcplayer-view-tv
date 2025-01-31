@@ -1,19 +1,17 @@
-import Brightness from 'react-native-brightness';
-import { useState, useEffect } from 'react';
+import * as Brightness from 'expo-brightness';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
-const useBrightness = () => {
+const useBrightness = (): [number, Dispatch<SetStateAction<number>>] => {
   const [brightness, setBrightness] = useState(0);
 
   useEffect(() => {
-    // Get initial brightness
-    Brightness.getBrightness().then(setBrightness);
-    
-    // Note: react-native-brightness doesn't have a direct listener API
-    // so we'll just handle manual changes
+    Brightness.getBrightnessAsync()
+      .then(setBrightness)
+      .then(() => Brightness.addBrightnessListener(event => setBrightness(event.brightness)));
   }, []);
 
   useEffect(() => {
-    Brightness.setBrightness(brightness);
+    Brightness.setBrightnessAsync(brightness);
   }, [brightness]);
 
   return [brightness, setBrightness];

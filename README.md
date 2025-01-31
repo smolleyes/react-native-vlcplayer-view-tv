@@ -1,97 +1,56 @@
-# react-native-vlcplayer-view-tv
+# react-native-vlc-media-player-view
 
-A React Native VLC media player view with full controls, optimized for TV platforms.
+[![NPM Version](https://img.shields.io/npm/v/react-native-vlc-media-player-view)](https://www.npmjs.com/package/react-native-vlc-media-player-view)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+React Native VLC media player view with full controls.
+
+https://github.com/user-attachments/assets/4db406bc-2a8e-4344-b52a-a9480c092273
+
+Use the latest libvlc library version!
+
+```gradle
+dependencies {
+    implementation 'org.videolan.android:libvlc-all:4.0.0-eap15'
+}
+```
 
 ## Installation
 
-```bash
-# Using yarn
-yarn add https://github.com/smolleyes/react-native-vlcplayer-view-tv.git
-
-# Using npm
-npm install https://github.com/smolleyes/react-native-vlcplayer-view-tv.git
+```sh
+npm install react-native-vlc-media-player-view
 ```
 
-### Dependencies
+Take a look at the peer dependencies defined in the [package.json](https://github.com/jboz/react-native-vlc-media-player-view/blob/main/package.json).
 
-This package requires the following peer dependencies:
+## Example
 
-```bash
-yarn add @react-native-community/slider react-native-brightness react-native-fullscreen-chz react-native-gesture-handler react-native-linear-gradient react-native-reanimated react-native-vector-icons react-native-volume-manager
+```tsx
+import { useVideoPlayer, VideoView } from 'react-native-vlc-media-player-view';
+
+export default function App() {
+  const player = useVideoPlayer({}, player => {
+    player.source = { uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' };
+    player.play();
+  });
+
+  return <VideoView player={player} />;
+}
 ```
+
+To who more: [example application](<[VideoView.types.ts](https://github.com/jboz/react-native-vlc-media-player-view/blob/main/example/App.tsx)>)
 
 ## Usage
 
-```jsx
-import { LitePlayerView } from 'react-native-vlcplayer-view-tv';
+Look at types definitions:
 
-export default function App() {
-  const [paused, setPaused] = useState(false);
+- [VideoView.types.ts](https://github.com/jboz/react-native-vlc-media-player-view/blob/main/src/VideoView.types.ts)
+- [Player.types.ts](https://github.com/jboz/react-native-vlc-media-player-view/blob/main/src/Player.types.ts)
 
-  const uri = 'http://example.com/video.mp4';
+## Development
 
-  return (
-    <View style={{ flex: 1 }}>
-      <LitePlayerView
-        source={{ uri, time: 0 }}
-        style={{ width: '100%', height: '100%' }}
-        paused={paused}
-      />
-    </View>
-  );
-}
+```shell
+git clone https://github.com/jboz/react-native-vlc-media-player-view.git
+cd example
+npx expo run:android
 ```
-
-### Advanced Usage with Full Controls
-
-```jsx
-import { VideoView, useVideoPlayer } from 'react-native-vlcplayer-view-tv';
-
-export default function App() {
-  const player = useVideoPlayer();
-
-  return (
-    <View style={{ flex: 1 }}>
-      <VideoView
-        player={player}
-        style={{ width: '100%', height: '100%' }}
-        source={{ uri: 'http://example.com/video.mp4' }}
-      />
-    </View>
-  );
-}
-```
-
-## Features
-
-- Full video playback controls
-- Audio track selection
-- Subtitle support
-- Brightness and volume controls
-- Gesture controls for seeking and volume
-- TV remote control support
-- Fullscreen support
-
-## Props
-
-### LitePlayerView Props
-
-| Prop | Type | Description |
-|------|------|-------------|
-| source | Object | Video source with uri and optional start time |
-| style | ViewStyle | Container style |
-| paused | boolean | Control video playback state |
-
-### VideoView Props
-
-| Prop | Type | Description |
-|------|------|-------------|
-| player | VideoPlayer | Player instance from useVideoPlayer hook |
-| source | Object | Video source configuration |
-| style | ViewStyle | Container style |
-| onBack | Function | Callback when back button is pressed |
-| onFullscreen | Function | Callback when fullscreen is toggled |
-
-## License
-
-MIT

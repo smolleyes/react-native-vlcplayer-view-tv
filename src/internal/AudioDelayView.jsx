@@ -1,9 +1,15 @@
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
+import { VideoPlayer } from '../Player.types';
 import { Focussable } from './components/Focussable';
 import { useTimeoutEffect } from './hooks/useTimeoutEffect';
 
-export const AudioDelayView = ({ player, onClose }) => {
+type DelayViewProps = {
+  player: VideoPlayer;
+  onClose: () => void;
+};
+
+export const AudioDelayView = ({ player, onClose }: DelayViewProps) => {
   const [delay, setDelay] = useTimeoutEffect(player.audioDelay, value => (player.audioDelay = value));
 
   return (

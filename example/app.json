@@ -1,11 +1,47 @@
 {
-  "name": "react-native-vlc-media-player-view-example",
-  "displayName": "VLC Media Player View Example",
-  "ios": {
-    "supportsTablet": true,
-    "bundleIdentifier": "ch.ifocusit.android.player.example"
-  },
-  "android": {
-    "package": "ch.ifocusit.android.player.example"
+  "expo": {
+    "name": "react-native-vlc-media-player-view-example",
+    "slug": "react-native-vlc-media-player-view-example",
+    "version": "1.0.0",
+    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ch.ifocusit.android.player.example"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "ch.ifocusit.android.player.example"
+    },
+    "plugins": [
+      [
+        "@react-native-tvos/config-tv",
+        {
+          "androidTVBanner": "./assets/tv_icons/icon-400x240.png",
+          "appleTVImages": {
+            "icon": "./assets/tv_icons/icon-1280x768.png",
+            "iconSmall": "./assets/tv_icons/icon-400x240.png",
+            "iconSmall2x": "./assets/tv_icons/icon-800x480.png",
+            "topShelf": "./assets/tv_icons/icon-1920x720.png",
+            "topShelf2x": "./assets/tv_icons/icon-3840x1440.png",
+            "topShelfWide": "./assets/tv_icons/icon-2320x720.png",
+            "topShelfWide2x": "./assets/tv_icons/icon-4640x1440.png"
+          }
+        }
+      ],
+      "expo-router"
+    ],
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
   }
 }

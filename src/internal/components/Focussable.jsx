@@ -1,13 +1,8 @@
-import { TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
-export const Focussable = ({ onPress, style, children }) => {
+export const Focussable = ({ onPress, style, children }: TouchableOpacityProps) => {
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={style}
-      activeOpacity={0.5}
-      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-    >
+    <TouchableOpacity activeOpacity={1} style={[style, { opacity: Platform.isTV ? 0.2 : 1 }]} onPress={onPress}>
       {children}
     </TouchableOpacity>
   );

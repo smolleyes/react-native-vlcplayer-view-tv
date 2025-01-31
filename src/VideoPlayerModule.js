@@ -1,3 +1,9 @@
-import { NativeModules } from 'react-native';
+import { requireNativeModule } from 'expo-modules-core';
 
-export const VideoPlayerModule = NativeModules.VideoPlayerModule;
+import { VideoPlayer } from './Player.types';
+
+type VideoPlayerModuleProps = {
+  VlcPlayer: typeof VideoPlayer;
+};
+
+export const VideoPlayerModule = requireNativeModule<VideoPlayerModuleProps>('VideoPlayerModule');

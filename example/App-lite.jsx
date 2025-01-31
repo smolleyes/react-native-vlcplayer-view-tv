@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, View } from 'react-native';
-import { LitePlayerView } from 'react-native-vlcplayer-view-tv';
+import { LitePlayerView } from 'react-native-vlc-media-player-view';
 
 export default function App() {
   const [paused, setPaused] = useState(false);

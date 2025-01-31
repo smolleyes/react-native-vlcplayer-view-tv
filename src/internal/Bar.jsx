@@ -1,9 +1,28 @@
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { MaterialIcons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ReactNode, useEffect, useState } from 'react';
+import { LayoutRectangle, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { ProgressInfo, VideoInfo, VideoPlayer } from '../Player.types';
+import { VideoPlayerEventsObserver, VideoPlayerListener } from '../VideoView';
 import { Focussable } from './components/Focussable';
+
+type ControlsBarProps = {
+  player: VideoPlayer;
+  playerObserver: VideoPlayerEventsObserver;
+  onBack?: () => void;
+  onPrevious?: () => void;
+  onNext?: () => void;
+  onBackward?: () => void;
+  onForward?: () => void;
+  centerLeftButton?: ReactNode;
+  leftButton?: ReactNode;
+  leftButtons?: ReactNode;
+  rightButton?: ReactNode;
+  rightButtons?: ReactNode;
+  backwardSeconds: number;
+  forwardSeconds: number;
+};
 
 const buttonSize = 40;
 
@@ -22,16 +41,16 @@ export const ControlsBar = ({
   centerLeftButton,
   backwardSeconds,
   forwardSeconds
-}) => {
+}: ControlsBarProps) => {
   const title = player.title;
 
   const [paused, setPaused] = useState(player.paused);
-  const [progress, setProgress] = useState();
-  const [videoInfo, setVideoInfo] = useState();
-  const [layout, setLayout] = useState();
+  const [progress, setProgress] = useState<ProgressInfo>();
+  const [videoInfo, setVideoInfo] = useState<VideoInfo>();
+  const [layout, setLayout] = useState<LayoutRectangle>();
 
   useEffect(() => {
-    const listener = {
+    const listener: VideoPlayerListener = {
       onPaused: setPaused,
       onProgress: setProgress,
       onLoaded: setVideoInfo
@@ -43,7 +62,7 @@ export const ControlsBar = ({
     };
   }, []);
 
-  const backwardIcon = () => {
+  const backwardIcon = (): any => {
     switch (backwardSeconds) {
       case 5:
         return 'replay-5';
@@ -56,7 +75,7 @@ export const ControlsBar = ({
     }
   };
 
-  const forwardIcon = () => {
+  const forwardIcon = (): any => {
     switch (forwardSeconds) {
       case 5:
         return 'forward-5';
@@ -208,7 +227,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const toTime = (timeInMillis) => {
+const toTime = (timeInMillis: number | undefined) => {
   if (timeInMillis !== undefined) {
     const timeInSeconds = Math.floor(timeInMillis / 1000);
     const hours = Math.floor(timeInSeconds / 3600);
@@ -220,4 +239,4 @@ const toTime = (timeInMillis) => {
   return '';
 };
 
-const leftPad = (value, pad = 2) => (value?.toFixed() || '').padStart(pad, '0');
+const leftPad = (value?: number, pad = 2) => (value?.toFixed() || '').padStart(pad, '0');

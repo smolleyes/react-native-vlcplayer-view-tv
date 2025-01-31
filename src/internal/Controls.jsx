@@ -1,6 +1,8 @@
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { MaterialIcons } from '@expo/vector-icons';
+import React, { forwardRef, ReactNode, useEffect, useImperativeHandle, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { VideoPlayer } from '../Player.types';
+import { VideoPlayerEventsObserver, VideoPlayerListener } from '../VideoView';
 import { AudioDelayView } from './AudioDelayView';
 import { ControlsBar } from './Bar';
 import { Focussable } from './components/Focussable';
@@ -12,7 +14,27 @@ import useVolume from './hooks/useVolume';
 import { TracksView } from './TracksView';
 import { VerticalControl } from './VerticalControl';
 
-export const Controls = forwardRef(
+type ControlsProps = {
+  player: VideoPlayer;
+  playerObserver: VideoPlayerEventsObserver;
+  onBack?: () => void;
+  onPrevious?: () => void;
+  onNext?: () => void;
+  backwardSeconds: number;
+  forwardSeconds: number;
+  alwaysFullscreen: boolean;
+  fullscreen: boolean;
+  onFullscreen?: () => void;
+  leftButtons?: ReactNode;
+  rightButtons?: ReactNode;
+};
+
+export type ControlsRef = {
+  showControlBar: (value: boolean) => void;
+  isControlBarVisible: boolean;
+};
+
+export const Controls = forwardRef<ControlsRef | undefined, ControlsProps>(
   (
     {
       player,
@@ -57,7 +79,7 @@ export const Controls = forwardRef(
     });
 
     useEffect(() => {
-      const listener = {
+      const listener: VideoPlayerListener = {
         onLoading: () => setLoading(true),
         onLoaded: () => setLoading(false)
       };
@@ -68,7 +90,7 @@ export const Controls = forwardRef(
       };
     }, []);
 
-    const [_, setDelta] = useTimeoutEffect(0, (delta) => {
+    const [_, setDelta] = useTimeoutEffect<number>(0, (delta: number) => {
       player.time = player.time + delta;
       setDelta(0, false);
     });
@@ -200,7 +222,7 @@ export const Controls = forwardRef(
   }
 );
 
-const capped = (value) => Math.max(0, Math.min(1, value));
+const capped = (value: number) => Math.max(0, Math.min(1, value));
 
 const styles = StyleSheet.create({
   container: {

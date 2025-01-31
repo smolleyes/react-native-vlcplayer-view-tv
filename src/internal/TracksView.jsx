@@ -1,9 +1,15 @@
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { VideoPlayer } from '../Player.types';
 import { Focussable } from './components/Focussable';
 
-export const TracksView = ({ player, onClose: close }) => {
+type TracksViewProps = {
+  player: VideoPlayer;
+  onClose: () => void;
+};
+
+export const TracksView = ({ player, onClose: close }: TracksViewProps) => {
   const [audioSelected, setAudioSelected] = useState(player.selectedAudioTrackId);
   const [textSelected, setTextSelected] = useState(player.selectedTextTrackId);
 

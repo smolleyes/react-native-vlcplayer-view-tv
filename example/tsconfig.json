@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "react-native-vlc-media-player-view": ["../src/index"],
+      "react-native-vlc-media-player-view/*": ["../src/*"]
+    }
+  }
+}

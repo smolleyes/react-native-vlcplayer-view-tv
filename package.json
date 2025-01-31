@@ -1,61 +1,50 @@
 {
-  "name": "react-native-vlcplayer-view-tv",
-  "version": "1.0.0",
-  "description": "React Native VLC media player view with full controls for TV",
-  "main": "build/index.js",
-  "files": [
-    "build",
-    "android",
-    "ios",
-    "src",
-    "*.podspec"
-  ],
-  "scripts": {
-    "build": "babel src -d build",
-    "clean": "rm -rf build",
-    "lint": "eslint .",
-    "prepare": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/smolleyes/react-native-vlcplayer-view-tv.git"
-  },
+  "name": "react-native-vlc-media-player-view",
+  "version": "1.1.2-beta.1",
+  "description": "React Native VLC media player view with no Expo dependencies, packaged as an NPM module.",
+  "main": "src/index.js",
   "keywords": [
     "react-native",
+    "react-native-vlc-media-player-view",
     "react-native-vlc",
     "react-native-player",
     "react-native-media-player",
-    "vlc",
-    "tv"
+    "vlc"
   ],
-  "author": "smolleyes",
-  "license": "MIT",
+  "repository": "https://github.com/jboz/react-native-vlc-media-player-view",
   "bugs": {
-    "url": "https://github.com/smolleyes/react-native-vlcplayer-view-tv/issues"
+    "url": "https://github.com/jboz/react-native-vlc-media-player-view/issues"
   },
-  "homepage": "https://github.com/smolleyes/react-native-vlcplayer-view-tv#readme",
+  "author": "Julien Boz <julien.boz@gmail.com> (https://github.com/jboz)",
+  "license": "MIT",
+  "homepage": "https://github.com/jboz/react-native-vlc-media-player-view#readme",
+  "files": [
+    "android/",
+    "ios/",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "echo 'No build step needed'",
+    "clean": "echo 'No clean step needed'",
+    "test": "echo 'No tests configured'",
+    "prepare": "echo 'No prepare step needed'",
+    "prepublishOnly": "echo 'No prepublish step needed'"
+  },
   "devDependencies": {
-    "@babel/cli": "^7.23.0",
-    "@babel/core": "^7.23.0",
-    "@react-native/babel-preset": "^0.73.18",
-    "react": "^18.2.0",
-    "react-native": "^0.77.0"
+    "@types/react": "^18.0.25"
   },
   "peerDependencies": {
-    "@react-native-async-storage/async-storage": "^2.1.0",
     "@react-native-community/slider": "^4.5.3",
     "react": "*",
     "react-native": "*",
-    "react-native-brightness": "*",
     "react-native-fullscreen-chz": "^4.0.13",
     "react-native-gesture-handler": "^2.19.0",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-reanimated": "^3.15.1",
-    "react-native-vector-icons": "^10.0.0",
-    "react-native-volume-manager": "^1.10.0"
-  },
-  "dependencies": {
-    "react-native-brightness": "^1.0.3",
-    "react-native-vector-icons": "^10.2.0"
+    "react-native-volume-manager": "^1.10.0",
+    "react-native-vector-icons": "*",
+    "react-native-brightness": "*"
   }
 }

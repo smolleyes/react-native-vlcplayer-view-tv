@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react';
-import VolumeManager from 'react-native-volume-manager';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { VolumeManager } from 'react-native-volume-manager';
 
-const useVolume = () => {
-  const [volume, setVolume] = useState(0);
+const useVolume = (): [number, Dispatch<SetStateAction<number>>] => {
+  const [volume, setVolume] = useState(1);
 
   useEffect(() => {
-    VolumeManager.getVolume().then(setVolume);
-    VolumeManager.addVolumeListener(event => setVolume(event.volume));
+    VolumeManager.getVolume()
+      .then(event => setVolume(event.volume))
+      .then(() => VolumeManager.addVolumeListener(event => setVolume(event.volume)));
   }, []);
 
   useEffect(() => {
-    VolumeManager.setVolume(volume);
+    volume !== undefined && VolumeManager.setVolume(volume);
   }, [volume]);
 
   return [volume, setVolume];
